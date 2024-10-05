@@ -1,0 +1,1 @@
+python odoo-bin -c odoo.conf -d my_DB -u estate
