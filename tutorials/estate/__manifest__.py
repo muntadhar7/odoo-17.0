@@ -6,6 +6,12 @@
     'category': 'Real Estate',
     'author': 'Muntadhar',
 
+    'data': [
+        'security/ir.model.access.csv',
+        'views/estate_property_view.xml',
+        'views/estate_property_menus.xml'
+    ],
+
     'installable': True,
     'application': True,  # Set this to True if it is a standalone app
 }
