@@ -98,8 +98,6 @@ class EstateProperty(models.Model):
             else:
                 record.selling_price = 0
                 record.buyer = None
-        for record in self:
-            if record.offer:
-                record.state = "offer_received"
+
 
 
