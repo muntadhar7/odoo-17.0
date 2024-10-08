@@ -26,7 +26,7 @@ class EstateProperty(models.Model):
     garden_area = fields.Integer()
     garden_orientation = fields.Selection([('north', 'North'),('south', 'South'),('east', 'East'),('west', 'West')])
     active = fields.Boolean(default = True)
-    state = fields.Selection([('new','New'),('offer_received','Offer Received'),('offer_accepted','Offer Accepted'),('sold','Sold'),('cancelled','Cancelled')], default = 'new',compute="_accept_offer", required = True, copy = False)
+    state = fields.Selection([('new','New'),('offer_received','Offer Received'),('offer_accepted','Offer Accepted'),('sold','Sold'),('cancelled','Cancelled')], default = 'new',readonly=False, required = True, copy = False)
     type = fields.Many2one("estate_property_type", string="Type")
     sales_person = fields.Many2one("res.users", string="Salesman")
     buyer = fields.Many2one("res.partner", string="Buyer")
@@ -94,7 +94,6 @@ class EstateProperty(models.Model):
             if accepted_offer:
                 record.selling_price = accepted_offer.price
                 record.buyer = accepted_offer.partner_id
-                record.state = "offer_accepted"
             else:
                 record.selling_price = 0
                 record.buyer = None
