@@ -1,20 +1,20 @@
 <?xml version="1.0"?>
 <odoo>
-<!--    <record id="estate_property_view_search" model="ir.ui.view">
+    <record id="estate_property_search_view" model="ir.ui.view">
         <field name="name">estate_property.search</field>
         <field name="model">estate_property</field>
         <field name="arch" type="xml">
-            <search>
+            <search string="Properties">
                 <field name="name" string="Opportunity"/>
                 <field name="description"/>
                 <field name="postcode"/>
                 <field name="bedrooms"/>
-                <filter string="Available" domain="[('date_availability', '&lt;', 'today')]"/>
+                <field name="living_area" string="Minimum Living Area" filter_domain="[('living_area','>=',self)]"/>
+                <filter string="Available" name = "available" domain="[('date_availability', '&lt;', 'today')]"/>
                 <filter string="Postcode" name="groupby_postcode" context="{'group_by': 'postcode'}"/>
             </search>
         </field>
     </record>
--->
 
 
     <record id="estate_property_view_form" model="ir.ui.view">
@@ -59,13 +59,13 @@
                                 <field name="facades" />
                                 <field name="garage" />
                                 <field name="garden" />
-                                <field name="garden_area" />
-                                <field name="garden_orientation" />
+                                <field name="garden_area" invisible="garden==False"/>
+                                <field name="garden_orientation" invisible="garden==False"/>
                                 <field name="total_area"/>
                             </group>
                         </page>
                         <page string="Offer" >
-                            <field name="offer" widget="section_and_note_one2many">
+                            <field name="offer" widget="section_and_note_one2many" readonly="state in ['offer_accepted','sold','cancelled']">
                                 <form>
                                     <group>
                                     <field name="price"/>
@@ -75,14 +75,14 @@
                                     <field name="status"/>
                                     </group>
                                 </form>
-                                <tree>
+                                <tree editable="True" decoration-success="status=='accepted'" decoration-danger="status=='refused'">
                                     <field name="price"/>
                                     <field name="partner_id"/>
                                     <field name="validity"/>
                                     <field name="date_deadline"/>
-                                    <button name="action_confirm" string="Accept" states="draft" type="object" icon="fa-check"/>
-                                    <button name="action_cancel" string="Refuse" states="draft" type="object" icon="fa-times"/>
-                                    <field name="status"/>
+                                    <button name="action_confirm" string="Accept" states="draft" type="object" icon="fa-check" invisible="status=='accepted' or status=='refused'"/>
+                                    <button name="action_cancel" string="Refuse" states="draft" type="object" icon="fa-times" invisible="status=='accepted' or status=='refused'"/>
+                                    <field name="status" optional="True"/>
                                 </tree>
                             </field>
                         </page>
@@ -104,7 +104,7 @@
         <field name="name">estate_property.tree</field>
         <field name="model">estate_property</field>
         <field name="arch" type="xml">
-            <tree string="Channel" >
+            <tree string="Channel" decoration-success="state in ['offer_received','offer_accepted']" decoration-bf="state =='offer_accepted'" decoration-muted="state =='sold'">
                 <field name="name"/>
                 <field name="postcode"/>
                 <field widget="many2many_tags" name="tags" options="{'color_field':'color'}"/>
@@ -112,7 +112,7 @@
                 <field name="living_area" string="Living Area (sqm)"/>
                 <field name="expected_price"/>
                 <field name="selling_price"/>
-                <field name="date_availability"/>
+                <field name="date_availability" optional="True"/>
                 <field name="state" />
             </tree>
         </field>
@@ -174,11 +174,23 @@
         </field>
     </record>
 
+    <record id="estate_property_tags_tree_view" model="ir.ui.view">
+        <field name="name">estate_property_tags.tree</field>
+        <field name="model">estate_property_tags</field>
+        <field name="arch" type="xml">
+                <tree string="Types" edit="1">
+                    <field name="name" />
+                </tree>
+        </field>
+    </record>
+
 
     <record id="estate_property_action" model="ir.actions.act_window">
         <field name="name">Estate Property</field>
         <field name="res_model">estate_property</field>
         <field name="view_mode">tree,form,search</field>
+        <field name="search_view_id" ref="estate_property_search_view"/>
+        <field name="context">{'search_default_available': True}</field>
     </record>
 
     <record id="estate_property_type_action" model="ir.actions.act_window">
