@@ -13,6 +13,7 @@ class EstatePropertyOffer(models.Model):
     status = fields.Selection([('accepted', 'Accepted'), ('refused', 'Refused')], copy=False, readonly=False)
 
     property_id = fields.Many2one('estate_property', required=True)
+    property_type_id = fields.Integer(related="property_id.type.id")
     partner_id = fields.Many2one('res.partner', required=True)
 
     validity = fields.Integer(default=7, store=True, compute='_inverse_deadline', inverse='_compute_deadline')
@@ -58,5 +59,6 @@ class EstatePropertyOffer(models.Model):
     def action_cancel(self):
         for record in self:
             record.status = "refused"
+
 
 

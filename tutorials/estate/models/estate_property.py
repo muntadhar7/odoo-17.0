@@ -1,3 +1,4 @@
+from xmlrpc.client import Fault
 
 from odoo import models, fields, api
 from odoo.addons.test_new_api.tests.test_new_fields import insert
@@ -98,5 +99,9 @@ class EstateProperty(models.Model):
                 record.selling_price = 0
                 record.buyer = None
 
-
+    @api.ondelete(at_uninstall=False)
+    def delete(self):
+        for record in self:
+            if record.state not in ("new","cancelled"):
+                raise UserError("Only new and cancelled properties can be deleted")
 
