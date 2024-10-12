@@ -1,15 +1,16 @@
 {
     'name': 'Estate',
     'version': '1.0',
-    'summary': 'Manage properties and estates',
-    'description': 'Module to manage properties, estates, and related functionalities.',
+    'summary': 'Manage property_ids and estates',
+    'description': 'Module to manage property_ids, estates, and related functionalities.',
     'category': 'Real Estate',
     'author': 'Muntadhar',
 
     'data': [
         'security/ir.model.access.csv',
         'views/estate_property_view.xml',
-        'views/estate_property_menus.xml'
+        'views/estate_property_menus.xml',
+        'views/res_users_views.xml',
     ],
 
     'installable': True,

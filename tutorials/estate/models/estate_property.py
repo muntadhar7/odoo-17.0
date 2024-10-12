@@ -1,7 +1,4 @@
-from xmlrpc.client import Fault
-
 from odoo import models, fields, api
-from odoo.addons.test_new_api.tests.test_new_fields import insert
 from odoo.exceptions import UserError, ValidationError
 
 
@@ -72,7 +69,7 @@ class EstateProperty(models.Model):
     def action_sold(self):
         for record in self:
             if record.state == "cancelled":
-                raise UserError("Cancelled properties cant be sold")
+                raise UserError("Cancelled property_ids cant be sold")
             else:
                 record.state = "sold"
         return True
@@ -80,7 +77,7 @@ class EstateProperty(models.Model):
     def action_cancel(self):
         for record in self:
             if record.state == "sold":
-                raise UserError("Sold properties cant be cancelled")
+                raise UserError("Sold property_ids cant be cancelled")
             else:
                 record.state = "cancelled"
         return True
@@ -103,5 +100,5 @@ class EstateProperty(models.Model):
     def delete(self):
         for record in self:
             if record.state not in ("new","cancelled"):
-                raise UserError("Only new and cancelled properties can be deleted")
+                raise UserError("Only new and cancelled property_ids can be deleted")
 
