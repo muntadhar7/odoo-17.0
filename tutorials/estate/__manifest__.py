@@ -3,7 +3,7 @@
     'version': '1.0',
     'summary': 'Manage property_ids and estates',
     'description': 'Module to manage property_ids, estates, and related functionalities.',
-    'category': 'Real Estate',
+    'category': 'Sales',
     'author': 'Muntadhar',
 
     'data': [
