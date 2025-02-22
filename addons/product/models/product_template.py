@@ -552,12 +552,11 @@ class ProductTemplate(models.Model):
                 ))
 
     @api.model
-    def _name_search(self, name, domain=None, operator='ilike', limit=None, order=None):
-        # Only use the product.product heuristics if there is a search term and the domain
-        # does not specify a match on `product.template` IDs.
-        domain = domain or []
-        if not name or any(term[0] == 'id' for term in domain):
-            return super()._name_search(name, domain, operator, limit, order)
+    def name_search(self, name, args=None, operator='ilike', limit=100):
+        if name:
+            name = name.replace(" ", "%")  # Replace spaces with %
+        return super(ProductTemplate, self).name_search(name, args, operator, limit)
+
 
         Product = self.env['product.product']
         templates = self.browse()

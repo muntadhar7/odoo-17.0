@@ -3,6 +3,7 @@
 
 import re
 from collections import defaultdict
+from itertools import product
 from operator import itemgetter
 
 from odoo import api, fields, models, tools, _
@@ -527,50 +528,24 @@ class ProductProduct(models.Model):
                 product.display_name = get_display_name(name, product.default_code)
 
     @api.model
-    def _name_search(self, name, domain=None, operator='ilike', limit=None, order=None):
-        domain = domain or []
+    def _name_search(self, name='', args=None, operator='ilike', limit=100, name_get_uid=None):
+        if args is None:
+            args = []
+
+        # Use PostgreSQL's similarity function for fuzzy search
         if name:
-            positive_operators = ['=', 'ilike', '=ilike', 'like', '=like']
-            product_ids = []
-            if operator in positive_operators:
-                product_ids = list(self._search([('default_code', '=', name)] + domain, limit=limit, order=order))
-                if not product_ids:
-                    product_ids = list(self._search([('barcode', '=', name)] + domain, limit=limit, order=order))
-            if not product_ids and operator not in expression.NEGATIVE_TERM_OPERATORS:
-                # Do not merge the 2 next lines into one single search, SQL search performance would be abysmal
-                # on a database with thousands of matching products, due to the huge merge+unique needed for the
-                # OR operator (and given the fact that the 'name' lookup results come from the ir.translation table
-                # Performing a quick memory merge of ids in Python will give much better performance
-                product_ids = list(self._search(domain + [('default_code', operator, name)], limit=limit, order=order))
-                if not limit or len(product_ids) < limit:
-                    # we may underrun the limit because of dupes in the results, that's fine
-                    limit2 = (limit - len(product_ids)) if limit else False
-                    product2_ids = self._search(domain + [('name', operator, name), ('id', 'not in', product_ids)], limit=limit2, order=order)
-                    product_ids.extend(product2_ids)
-            elif not product_ids and operator in expression.NEGATIVE_TERM_OPERATORS:
-                domain2 = expression.OR([
-                    ['&', ('default_code', operator, name), ('name', operator, name)],
-                    ['&', ('default_code', '=', False), ('name', operator, name)],
-                ])
-                domain2 = expression.AND([domain, domain2])
-                product_ids = list(self._search(domain2, limit=limit, order=order))
-            if not product_ids and operator in positive_operators:
-                ptrn = re.compile(r'(\[(.*?)\])')
-                res = ptrn.search(name)
-                if res:
-                    product_ids = list(self._search([('default_code', '=', res.group(2))] + domain, limit=limit, order=order))
-            # still no results, partner in context: search on supplier info as last hope to find something
-            if not product_ids and self._context.get('partner_id'):
-                suppliers_ids = self.env['product.supplierinfo']._search([
-                    ('partner_id', '=', self._context.get('partner_id')),
-                    '|',
-                    ('product_code', operator, name),
-                    ('product_name', operator, name)])
-                if suppliers_ids:
-                    product_ids = self._search([('product_tmpl_id.seller_ids', 'in', suppliers_ids)], limit=limit, order=order)
-        else:
-            product_ids = self._search(domain, limit=limit, order=order)
-        return product_ids
+            self._cr.execute("""
+                SELECT id, similarity(name, %s) AS sim
+                FROM product_product
+                WHERE name %% %s
+                ORDER BY sim DESC
+                LIMIT %s
+            """, (name, name, limit))
+            results = self._cr.fetchall()
+            ids = [res[0] for res in results]
+            return self.browse(ids).name_get()
+
+        return super(ProductProduct, self)._name_search(name, args, operator, limit, name_get_uid)
 
     @api.model
     def view_header_get(self, view_id, view_type):
