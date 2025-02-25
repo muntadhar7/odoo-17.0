@@ -1,0 +1,2 @@
+id,name,model_id/id,group_id/id,perm_read,perm_write,perm_create,perm_unlink
+access_warehouse_geo_loc,access_warehouse_geo_loc,model_warehouse_geo_loc,base.group_user,1,1,1,1

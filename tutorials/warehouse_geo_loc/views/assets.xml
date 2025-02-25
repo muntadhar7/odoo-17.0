@@ -1,0 +1,9 @@
+<odoo>
+    <template id="assets_backend" inherit_id="web.assets_backend">
+        <xpath expr="." position="inside">
+            <script type="text/javascript" src="/web/static/src/js/dom_ready.js"></script>
+            <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBWDcfFV2tau7FNaxO0eIGqniJEGv3GO9c"></script>
+            <script type="text/javascript" src="/warehouse_geo_loc/static/src/js/google_map.js"></script>
+        </xpath>
+    </template>
+</odoo>

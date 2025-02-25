@@ -1,0 +1,1 @@
+from . import warehouse_geo_loc, stock_warehouse_inherit
