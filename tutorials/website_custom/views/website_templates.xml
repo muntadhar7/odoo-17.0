@@ -1,13 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <template id="custom_website_header" inherit_id="website.layout">
-        <xpath expr="//header" position="after">
-            <header>
-                <div class="container">
-                <h1>Get Your Location</h1>
-                <button id="getLocationBtn">Get Location</button>
-                <p id="demo"></p>
+    <!-- Map in checkout form -->
+    <template id="geo_checkout" inherit_id="website_sale.address">
+        <xpath expr="//select[@id='country_id']" position="after">
+            <div class="form-group">
+                <label>Choose Your Location on Map:</label>
+                <div id="map" style="height: 400px; width: 100%; margin-top: 20px;"></div>
+                <input type="hidden" name="partner_latitude" id="partner_latitude"/>
+                <input type="hidden" name="partner_longitude" id="partner_longitude"/>
             </div>
-            </header>
         </xpath>
     </template>
+
+
 </odoo>
